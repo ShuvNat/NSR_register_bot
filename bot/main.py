@@ -14,6 +14,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config import Config, load_config
+from dialogs.guests_dialog import guests_dialog
 from dialogs.quiestionary_dialog import questionnaire_dialog
 from dialogs.start_dialog import start_dialog
 from fsm.fsm_dialogs import storage, StartState
@@ -62,6 +63,7 @@ async def on_unknown_intent(event: ErrorEvent, dialog_manager: DialogManager):
 
 dialog_router = Router()
 dialog_router.include_routers(
+    guests_dialog,
     questionnaire_dialog,
     start_dialog,
 )

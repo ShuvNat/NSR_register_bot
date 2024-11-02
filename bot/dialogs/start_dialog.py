@@ -6,12 +6,14 @@ from pandas import DataFrame, ExcelWriter
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .guests_dialog import guests
+
 from db.requests import (
     count_registered, get_is_registered, get_nickname, guest_list
 )
 from .filters import is_admin
 from fsm.fsm_dialogs import (
-    StartState, QuestionnaireState
+    GuestsState, StartState, QuestionnaireState
     )
 
 FILEPATH = Path(__file__).resolve().parent.parent
@@ -34,8 +36,8 @@ async def start_getter(
     else:
         username = event_from_user.first_name or 'Stranger'
     count = await count_registered(session)
-    if count >= 80:
-        text = 3
+    print(guests.max)
+    print(count)
     if is_registered == 0:
         registered = False
         unregistered = True
@@ -44,6 +46,9 @@ async def start_getter(
         registered = True
         unregistered = False
         text = 2
+    if count >= guests.max:
+        text = 3
+        unregistered = False
     getter_data = {'username': username,
                    'text': text,
                    'registered': registered,
@@ -131,6 +136,8 @@ start_dialog = Dialog(
                    on_click=get_registrated, when=is_admin),
             Button(Const('Скачать список гостей'), id='guest_list',
                    on_click=get_guest_list, when=is_admin),
+            Start(Const('Максимальное число гостей'), id='guests',
+                  state=GuestsState.guests, when=is_admin),
         ),
         getter=start_getter,
         state=StartState.start

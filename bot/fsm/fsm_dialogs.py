@@ -21,3 +21,8 @@ class QuestionnaireState(StatesGroup):
     unregister = State()
     fail_unregister = State()
     save = State()
+
+
+class GuestsState(StatesGroup):
+    guests = State()
+    change = State()
